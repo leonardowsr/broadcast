@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function docBelongsToTenant() {
+      return isAuth() && resource.data.tenantId == request.auth.token.tenantId;
+    }
+
+    function newDocBelongsToTenant() {
+      return isAuth() && request.resource.data.tenantId == request.auth.token.tenantId;
+    }
+
+    function tenantIdIsUnchanged() {
+      return request.resource.data.tenantId == resource.data.tenantId;
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if isAuth() && tenantId == request.auth.token.tenantId;
+      allow write: if false;
+    }
+
+    match /connections/{connId} {
+      allow read: if docBelongsToTenant();
+      allow create: if newDocBelongsToTenant();
+      allow update: if docBelongsToTenant() && tenantIdIsUnchanged();
+      allow delete: if false;
+    }
+
+    match /contacts/{contactId} {
+      allow read: if docBelongsToTenant();
+      allow create: if newDocBelongsToTenant();
+      allow update: if docBelongsToTenant() && tenantIdIsUnchanged();
+      allow delete: if false;
+    }
+
+    match /messages/{msgId} {
+      allow read: if docBelongsToTenant();
+      allow create: if newDocBelongsToTenant();
+      allow update: if docBelongsToTenant() && tenantIdIsUnchanged();
+      allow delete: if false;
+    }
+  }
+}
