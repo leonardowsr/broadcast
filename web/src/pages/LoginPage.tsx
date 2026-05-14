@@ -7,11 +7,10 @@ import CardContent from '@mui/material/CardContent'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 
 export default function LoginPage() {
-  const { login, loginWithGoogle } = useAuth()
+  const { login } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,16 +24,6 @@ export default function LoginPage() {
       navigate('/app/connections')
     } catch (err: unknown) {
       setError((err as Error)?.message ?? 'Erro ao fazer login')
-    }
-  }
-
-  const handleGoogle = async () => {
-    setError('')
-    try {
-      await loginWithGoogle()
-      navigate('/app/connections')
-    } catch (err: unknown) {
-      setError((err as Error)?.message ?? 'Erro ao logar com Google')
     }
   }
 
@@ -55,12 +44,6 @@ export default function LoginPage() {
               Entrar
             </Button>
           </form>
-
-          <Divider>ou</Divider>
-
-          <Button variant="outlined" fullWidth onClick={handleGoogle}>
-            Entrar com Google
-          </Button>
 
           <Typography className="text-center text-sm">
             Não tem conta? <Link to="/register" className="underline">Cadastre-se</Link>
